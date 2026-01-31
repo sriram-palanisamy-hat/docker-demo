@@ -39,7 +39,8 @@ fn main() {
             &mut stack,
             CloneFlags::CLONE_NEWPID
                 | CloneFlags::CLONE_NEWNS
-                | CloneFlags::CLONE_NEWUTS,
+                | CloneFlags::CLONE_NEWUTS
+                | CloneFlags::CLONE_NEWNET,
                 Some(Signal::SIGCHLD as i32),
         )
         .unwrap()
