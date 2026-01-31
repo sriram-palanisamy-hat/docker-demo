@@ -1,0 +1,12 @@
+[package]
+name = "mini_container"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+nix = { version = "0.31", features = [
+  "sched",
+  "mount",
+  "fs",
+  "hostname"
+] }
