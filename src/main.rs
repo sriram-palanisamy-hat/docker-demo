@@ -1,50 +1,54 @@
-use nix::sched::{clone, CloneFlags};
-use nix::unistd::{chroot, chdir, sethostname};
-use nix::mount::{mount, MsFlags};
-use nix::sys::wait::waitpid;
-use nix::sys::signal::Signal;
-use std::process::Command;
+mod container;
+mod network;
 
-fn main() {
-    let mut stack = vec![0; 1024 * 1024];
+use clap::{Parser, Subcommand};
 
-    let pid = unsafe {
-        clone(
-            Box::new(|| {
-                println!("setting hostname");
-                sethostname("mini-container").unwrap();
+#[derive(Parser)]
+#[command(author, version, about)]
+struct Cli {
+    #[command(subcommand)]
+    command: Commands,
+}
 
-                println!(" chroot to rootfs");
-                chroot("rootfs").unwrap();
-                chdir("/").unwrap();
+#[derive(Subcommand)]
+enum Commands {
+    Network {
+        #[command(subcommand)]
+        command: NetworkCmd,
+    },
+    Run {
+        #[arg(long)]
+        net: String,
+        #[arg(long)]
+        ip: String,
+    },
+}
 
-                println!(" mounting /proc");
-                mount(
-                    Some("proc"),
-                    "/proc",
-                    Some("proc"),
-                    MsFlags::empty(),
-                    None::<&str>,
-                )
-                .unwrap();
+#[derive(Subcommand)]
+enum NetworkCmd {
+    Create {
+        #[arg(long)]
+        name: String,
+        #[arg(long)]
+        subnet: String,
+        #[arg(long)]
+        gateway: String,
+    },
+}
 
-                println!("starting node");
-                Command::new("/usr/local/bin/node")
-                    .arg("/app/server.js")
-                    .status()
-                    .unwrap();
+fn main() -> anyhow::Result<()> {
+    let cli = Cli::parse();
 
-                0
-            }),
-            &mut stack,
-            CloneFlags::CLONE_NEWPID
-                | CloneFlags::CLONE_NEWNS
-                | CloneFlags::CLONE_NEWUTS
-                | CloneFlags::CLONE_NEWNET,
-                Some(Signal::SIGCHLD as i32),
-        )
-        .unwrap()
-    };
+    match cli.command {
+        Commands::Network { command } => match command {
+            NetworkCmd::Create { name, subnet, gateway } => {
+                network::create_bridge(&name, &subnet, &gateway)?;
+            }
+        },
+        Commands::Run { net, ip } => {
+            container::run_container(&net, &ip)?;
+        }
+    }
 
-    waitpid(pid, None).unwrap();
+    Ok(())
 }

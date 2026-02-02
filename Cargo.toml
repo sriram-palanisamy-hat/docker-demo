@@ -4,9 +4,8 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-nix = { version = "0.31", features = [
-  "sched",
-  "mount",
-  "fs",
-  "hostname"
-] }
+nix = { version = "0.31", features = ["sched", "mount", "fs", "hostname"] }
+rtnetlink = "0.14"
+tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
+clap = { version = "4", features = ["derive"] }
+anyhow = "1"
