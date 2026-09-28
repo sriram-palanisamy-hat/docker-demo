@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "atlassian-rovo-mcp": {
+      "command": "npx",
+      "type": "local",
+      "tools": ["*"],
+      "args": [
+        "mcp-remote@latest",
+        "https://mcp.atlassian.com/v1/mcp",
+        "--header",
+        "Authorization: Basic bmVvdmFuY2UuZGVtbythdGxhc3NpYW5AZ21haWwuY29tOkFUQVRUM3hGZkdGMDBTcWRWTFlnUzZNdFdGaTJJdW82Qy1lSDVyVXBRZWpFa2R2ODVMTDJiSk1KemRoV1VPN1NLT3dDNTJtcXBlakVTSWt6R3EzeGlyVEhhVG1wVnN4NUktdkV5TUtxZkpZY0ZyT0RFUVU4X0Y1VDBVa1hNV1Fmal9DMjNGWFpnNXJkdUtrd1RQQXhmeklpdTZSWko2ZnJ5NDY4Q1Q2eTJCYXpWNFQ3YzVvNngtVT1BRDVBNUVDNQ=="
+      ]
+    }
+  }
+}
